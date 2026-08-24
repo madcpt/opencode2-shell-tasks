@@ -1,0 +1,75 @@
+{
+  "name": "opencode2-shell-tasks",
+  "version": "0.1.1",
+  "description": "Detached shell jobs with task management for OpenCode 2 (V2 plugin API)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madcpt/opencode2-shell-tasks.git"
+  },
+  "homepage": "https://github.com/madcpt/opencode2-shell-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/madcpt/opencode2-shell-tasks/issues"
+  },
+  "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./tui": {
+      "types": "./dist/tui.d.ts",
+      "import": "./dist/tui.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "tsx --test test/*.test.ts",
+    "check": "npm run build && npm test",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "background-tasks",
+    "shell"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@opencode-ai/plugin": "0.0.0-beta-18027"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.5.7",
+    "@opentui/keymap": ">=0.5.7",
+    "@opentui/solid": ">=0.5.7",
+    "solid-js": ">=1.9.10 <2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
+    "@opentui/core": "^0.5.7",
+    "@opentui/keymap": "^0.5.7",
+    "@opentui/solid": "^0.5.7",
+    "@types/node": "^24.0.0",
+    "babel-preset-solid": "^1.9.12",
+    "solid-js": "^1.9.12",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
