@@ -1,5 +1,9 @@
 # OpenCode 2 Shell Tasks
 
+[![npm version](https://img.shields.io/npm/v/opencode2-shell-tasks.svg)](https://www.npmjs.com/package/opencode2-shell-tasks)
+[![npm downloads](https://img.shields.io/npm/dm/opencode2-shell-tasks.svg)](https://www.npmjs.com/package/opencode2-shell-tasks)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 An [OpenCode 2](https://opencode.ai/v2/docs/) plugin for Claude Code-style background shell jobs, built on the **V2 plugin API** (`Plugin.define`, `ctx.tool.transform`, `ctx.session.hook`). It lets the Agent start a long command without blocking the current turn, continue other work, inspect status and logs, stop a task, and manage everything from a native TUI panel.
 
 > This is the OpenCode 2 port of [`opencode-shell-tasks`](https://github.com/madcpt/opencode-shell-tasks), which targets OpenCode 1.x. The two plugins target different plugin API generations and are not interchangeable.
@@ -14,6 +18,35 @@ An [OpenCode 2](https://opencode.ai/v2/docs/) plugin for Claude Code-style backg
 - A native `/tasks` TUI panel registered automatically by the plugin
 - Automatic Agent guidance to route long-running shell work to `background_bash`
 - Permission-gated tools via declarative V2 `options.permission`
+
+## Install From npm
+
+The fastest path is the CLI, which installs the package into OpenCode's cache and adds it to your global config:
+
+```sh
+opencode2 plugin add opencode2-shell-tasks
+```
+
+Or add it manually to the `plugins` list in `~/.config/opencode/opencode.json(c)`:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": ["opencode2-shell-tasks"]
+}
+```
+
+OpenCode 2 discovers both server and TUI entrypoints from the same package. Restart OpenCode after changing the configuration.
+
+## Install For Agents
+
+If you are an AI agent setting this plugin up for a user:
+
+1. Check the environment: `opencode2 --version` must report a V2 beta release (`0.0.0-beta-*`). This plugin does not work on OpenCode 1.x.
+2. Install with `opencode2 plugin add opencode2-shell-tasks`. If that command is unavailable, edit the user's existing `~/.config/opencode/opencode.json(c)` and **merge** `"plugins": ["opencode2-shell-tasks"]` into it — never replace or overwrite the whole file; preserve every unrelated setting.
+3. Restart the background service: `opencode2 service restart`.
+4. Verify loading: `opencode2 api get /api/plugin | jq '.data[] | select(.id == "opencode2-shell-tasks")'` — expect `"status": "active"`.
+5. Verify tools work end to end by listing tasks through the plugin's own tool (e.g. call `background_tasks`) rather than assuming registration succeeded.
 
 ## Install From This Checkout
 
