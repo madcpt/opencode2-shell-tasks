@@ -49,13 +49,37 @@ export default Plugin.define({
       }
     }
 
+    // Wake the originating session when a watched task reaches a terminal state.
+    const notifySession = async (task: BackgroundTask) => {
+      if (!task.sessionID) return
+      const success = task.status === "completed"
+      const label = task.label ?? task.id
+      const exit = task.exitCode === undefined ? "" : ` (exit ${task.exitCode})`
+      const followUp = success
+        ? `Use the background_output tool with task_id "${task.id}" to read its output, then report the result or continue the work it unblocks.`
+        : `Use the background_output tool with task_id "${task.id}" to inspect what went wrong before deciding whether to retry.`
+      try {
+        await ctx.session.synthetic({
+          sessionID: task.sessionID,
+          text: `Background task ${label} ${task.status}${exit}. ${followUp}`,
+          delivery: "queue",
+        })
+      } catch {
+        // The session may be gone; the task record stays reconciled either way.
+      }
+    }
+
     const poll = setInterval(() => {
       void (async () => {
         for (const { store, watched } of projects.values()) {
           for (const task of await store.list()) {
             const refreshed = await store.refresh(task)
-            if (!terminalStatuses.has(refreshed.status)) watched.add(refreshed.id)
-            else watched.delete(refreshed.id)
+            if (!terminalStatuses.has(refreshed.status)) {
+              watched.add(refreshed.id)
+              continue
+            }
+            if (!watched.delete(refreshed.id)) continue
+            await notifySession(refreshed)
           }
         }
       })().catch(() => undefined)

@@ -15,6 +15,7 @@ An [OpenCode 2](https://opencode.ai/v2/docs/) plugin for Claude Code-style backg
 - Combined stdout/stderr logs with bounded tail reads
 - Status and exit-code reconciliation after an OpenCode restart
 - Graceful or forced process-group cancellation
+- Automatic Agent wake-up: when a task finishes, the originating session receives a queued synthetic message telling the Agent to read the output and continue
 - A native `/tasks` TUI panel registered automatically by the plugin
 - Automatic Agent guidance to route long-running shell work to `background_bash`
 - Permission-gated tools via declarative V2 `options.permission`
@@ -84,6 +85,8 @@ The Agent can call these tools:
 | `background_tasks` | List running or finished tasks. |
 | `background_output` | Tail a task's combined output. |
 | `background_kill` | Send `SIGTERM` or `SIGKILL` to the task process group. |
+
+When a task reaches a terminal state, the plugin injects a queued synthetic message into the session that started it, so the Agent wakes up on its next turn, reads the output via `background_output`, and continues without being asked. No manual polling is required.
 
 Run `/tasks` to open the native shell-details panel immediately. It does not call the model. The prompt footer shows a shell counter while any shell is active.
 
